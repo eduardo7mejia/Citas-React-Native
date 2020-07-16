@@ -10,6 +10,7 @@ import {
   Keyboard,
   Image,
   Platform,
+  StatusBar,
 } from 'react-native';
 
 import Cita from './componentes/citas';
@@ -45,6 +46,11 @@ const App = () => {
   return (
     <TouchableWithoutFeedback onPress={() => cerrarTeclado()}>
       <View style={styles.contenedor}>
+        <StatusBar
+          barStyle="light-content"
+          hidden={false}
+          backgroundColor="#e7305b"
+        />
         <Text style={styles.titulo}>Consultorio Citas</Text>
         <View style={styles.container}>
           <TouchableHighlight
