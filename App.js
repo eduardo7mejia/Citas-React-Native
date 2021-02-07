@@ -76,7 +76,7 @@ const App = () => {
                 <Text style={styles.subtitulo}>Citas pendientes</Text>
               ) : (
                 <>
-                  <Text style={styles.subtitulo}>Crea tu primera cita</Text>
+                  <Text style={styles.subtitulo}>Crea tu primera cita jeje</Text>
                   <Image
                     style={styles.imagen}
                     source={require('./componentes/images/Schedule-rafiki.png')}
