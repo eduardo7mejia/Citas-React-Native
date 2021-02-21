@@ -1,5 +1,5 @@
 //Definiimos nuestro primer state
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,28 +12,44 @@ import {
   Platform,
   StatusBar,
 } from 'react-native';
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faPaw } from "@fortawesome/free-solid-svg-icons";
 
 import Cita from './componentes/citas';
 import Formulario from './componentes/formulario';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const App = () => {
+    //Definir el state de citas
+    const [citas, setCitas] = useState([]);
+
+  const onPress = () => {};
   const [mostrarForm, guardarMostrarForm] = useState(false);
-  //Definir el state de citas
-  const [citas, setCitas] = useState([
-    {id: '1', paciente: 'Sancho', propietario: 'Mejia', sintomas: 'No come'},
-    {id: '2', paciente: 'Ramiro', propietario: 'Eduardo', sintomas: 'No '},
-    {
-      id: '3',
-      paciente: 'Juan',
-      propietario: 'Luis',
-      sintomas: 'No come el perro',
-    },
-  ]);
-  //Elimina los pacientes del state
-  const eliminarPaciente = id => {
-    setCitas(citasActuales => {
-      return citasActuales.filter(cita => cita.id !== id);
-    });
+
+  // Uso de useEffect
+  useEffect(() => {
+    const obtenerCitasStorage = async () => {
+      try {
+        const citasStorage = await AsyncStorage.getItem('citas');
+        if (citasStorage) {
+          setCitas(JSON.parse(citasStorage))
+        } else {
+          
+        }
+      } catch(error){
+        console.log(error);
+      }
+    }
+    obtenerCitasStorage();
+  }, []);
+
+
+
+  //Elimina los candidatos del state
+  const eliminarCandidato = id => {
+    const citasFiltradas = citas.filter(cita => cita.id !== id);
+    setCitas(citasFiltradas);
+    guardarCitasStorage(JSON.stringify(citasFiltradas));
   };
   //Muestra u oculta Formulario
   const mostrarFormulario = () => {
@@ -43,17 +59,27 @@ const App = () => {
   const cerrarTeclado = () => {
     Keyboard.dismiss();
   };
+  // Almacenar las citas en el storage 
+  const guardarCitasStorage = async (citasJSON) => {
+    try {
+      await AsyncStorage.setItem('item', citasJSON);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <TouchableWithoutFeedback onPress={() => cerrarTeclado()}>
       <View style={styles.contenedor}>
         <StatusBar
           barStyle="light-content"
           hidden={false}
-          backgroundColor="#e7305b"
+          backgroundColor="#ff5a66"
         />
-        <Text style={styles.titulo}>Consultorio Citas</Text>
+        <Text style={styles.titulo}> V E N G A L A </Text>
         <View style={styles.container}>
           <TouchableHighlight
+            underlayColor={'#d9455f'}
+            onPress={onPress}
             onPress={() => mostrarFormulario()}
             style={styles.btnMostrarForm}>
             <Text style={styles.textoMostrarForm}>
@@ -68,15 +94,16 @@ const App = () => {
                 citas={citas}
                 setCitas={setCitas}
                 guardarMostrarForm={guardarMostrarForm}
+                guardarCitasStorage={guardarCitasStorage}
               />
             </>
           ) : (
             <>
               {citas.length > 0 ? (
-                <Text style={styles.subtitulo}>Citas pendientes</Text>
+                <Text style={styles.subtitulo}>Agenda</Text>
               ) : (
                 <>
-                  <Text style={styles.subtitulo}>Crea tu primera cita jeje</Text>
+                  <Text style={styles.subtitulo}>Crea tu primera cita</Text>
                   <Image
                     style={styles.imagen}
                     source={require('./componentes/images/Schedule-rafiki.png')}
@@ -90,7 +117,7 @@ const App = () => {
                 style={styles.listado}
                 data={citas}
                 renderItem={({item}) => (
-                  <Cita item={item} eliminarPaciente={eliminarPaciente} />
+                  <Cita item={item} eliminarCandidato={eliminarCandidato} />
                 )}
                 keyExtractor={cita => cita.id}
               />
@@ -104,7 +131,7 @@ const App = () => {
 
 const styles = StyleSheet.create({
   contenedor: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#ffffff',
     flex: 1,
   },
   container: {
@@ -113,15 +140,15 @@ const styles = StyleSheet.create({
     paddingVertical: 1,
   },
   titulo: {
-    color: '#e7305b',
+    color: '#ff5a66',
     textAlign: 'center',
     marginTop: Platform.OS === 'android' ? 10 : 20,
     marginBottom: 5,
-    fontSize: 28,
+    fontSize: 40,
     fontWeight: 'bold',
   },
   subtitulo: {
-    color: '#ff9a76',
+    color: '#4267b2',
     textAlign: 'center',
     marginTop: Platform.OS === 'android' ? 10 : 20,
     marginBottom: 5,
@@ -138,9 +165,9 @@ const styles = StyleSheet.create({
   btnMostrarForm: {
     marginTop: 10,
     padding: 10,
-    backgroundColor: '#e7305b',
-    marginVertical: 5,
-    borderRadius: 10,
+    backgroundColor: '#ff5a66',
+    marginVertical: 10,
+    borderRadius: 25,
     alignItems: 'center',
   },
   textoMostrarForm: {

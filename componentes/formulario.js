@@ -8,17 +8,22 @@ import {
   TouchableHighlight,
   Alert,
   ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Plattform
 } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import shortid from 'shortid';
 // import shortid from 'shortid';
-const Formulario = ({citas, setCitas, guardarMostrarForm}) => {
-  const [paciente, guardarPaciente] = useState('');
-  const [propietario, guardarPropietario] = useState('');
+const Formulario = ({citas, setCitas, guardarMostrarForm,guardarCitasStorage}) => {
+  const [candidato, guardarCandidato] = useState('');
+  const [area, guardarArea] = useState('');
+  const [edad, guardarEdad] = useState('');
   const [telefono, guardarTelefono] = useState('');
   const [fecha, guardarFecha] = useState('');
   const [hora, guardarHora] = useState('');
-  const [sintomas, guardarSintomas] = useState('');
+  const [nota, guardarNota] = useState('');
+  const [reclutador, guardarReclutador] = useState('');
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
@@ -31,8 +36,8 @@ const Formulario = ({citas, setCitas, guardarMostrarForm}) => {
   };
   const confirmarFecha = date => {
     const opcionesFecha = {year: 'numeric', month: 'long', day: '2-digit'};
-    hideDatePicker();
     guardarFecha(date.toLocaleDateString('es-ES', opcionesFecha));
+    hideDatePicker();
   };
   //Muestra u oculta la hora
   const showTimePicker = () => {
@@ -43,43 +48,55 @@ const Formulario = ({citas, setCitas, guardarMostrarForm}) => {
   };
   const confirmarHora = hora => {
     const opcionesHora = {hour: 'numeric', minute: '2-digit'};
+    guardarHora(hora.toLocaleTimeString('es-ES', opcionesHora));
     hideTimePicker();
-    guardarHora(hora.toLocaleTimeString('en-US', opcionesHora));
   };
+  const onPress = () => {};
   //Crear nueva cita
   const crearNuevaCita = () => {
     //Validar formulario
     if (
-      paciente.trim() === '' ||
-      propietario.trim() === '' ||
+      candidato.trim() === '' ||
+      area.trim() === '' ||
+      edad.trim() === '' ||
       telefono.trim() === '' ||
       fecha.trim() === '' ||
       hora.trim() === '' ||
-      sintomas.trim() === ''
+      reclutador.trim() === '' ||
+      nota.trim() === ''
     ) {
       //Datos Incompletos Falla la validación
       mostrarAlerta();
       return;
     }
     //Crear una nueva cita
-    const cita = {paciente, propietario, telefono, fecha, hora, sintomas};
+    const cita = {candidato,area, edad, telefono, fecha, hora, nota, reclutador};
     cita.id = shortid.generate();
-    //console.log(cita);
-    //Agregar al state
-    console.log('Creando nueva cita');
+
     //Agregar al state
     const nuevaCita = [...citas, cita];
     setCitas(nuevaCita);
+    //Pasar las nuevas citas al AsyncStorage
+    guardarCitasStorage(JSON.stringify(nuevaCita))
     //Ocultar el formulario
     guardarMostrarForm(false);
     //Limpiar campos del formulario
+    guardarCandidato('');
+    guardarArea('');
+    guardarEdad('');
+    guardarTelefono('');
+    guardarFecha('');
+    guardarHora('');
+    guardarNota('');
+    guardarReclutador('');
+
   };
-  //Mostrar alerta si faalla la validación
+  //Mostrar alerta si falla la validación
   const mostrarAlerta = () => {
     //Error =titulo, cuerpo=mensaje
     Alert.alert(
       'Error',
-      'No seas tonto,faltan campos por llenar hijo de la verdura',
+      'Todos los campos son obligarorios',
       [
         {
           text: 'OK', //Arreglo de botones
@@ -87,30 +104,52 @@ const Formulario = ({citas, setCitas, guardarMostrarForm}) => {
       ],
     );
   };
+  //Ocultar el taclado 
+  const cerrarTeclado= () => {
+    Keyboard.dismiss();
+  }
 
   return (
     <>
+    <TouchableWithoutFeedback onPress={() => cerrarTeclado()} >
       <ScrollView style={styles.formulario}>
+      <Text style={styles.titulito}>Datos generales del candidato</Text>
         <View>
-          <Text style={styles.label}>Paciente:</Text>
           <TextInput
             style={styles.input}
-            onChangeText={texto => guardarPaciente(texto)}
+            placeholder="Nombre del candidato"
+            onChangeText={texto => guardarCandidato(texto)}
           />
         </View>
         <View>
-          <Text style={styles.label}>Doctor:</Text>
           <TextInput
             style={styles.input}
-            onChangeText={texto => guardarPropietario(texto)}
+            placeholder="Area de la vacante"
+            onChangeText={texto => guardarArea(texto)}
           />
         </View>
         <View>
-          <Text style={styles.label}>Telefono:</Text>
           <TextInput
             style={styles.input}
+            placeholder="Edad"
+            onChangeText={texto => guardarEdad(texto)}
+            keyboardType="numeric"
+          />
+        </View>
+        <View>
+          <TextInput
+            style={styles.input}
+            placeholder="Telefono o celular"
             onChangeText={texto => guardarTelefono(texto)}
             keyboardType="numeric"
+          />
+        </View>
+        <View>
+          <TextInput
+            multiline
+            style={styles.input}
+            placeholder="Nota"
+            onChangeText={texto => guardarNota(texto)}
           />
         </View>
         <View>
@@ -118,7 +157,7 @@ const Formulario = ({citas, setCitas, guardarMostrarForm}) => {
           <Button
             title="Seleccionar fecha"
             onPress={showDatePicker}
-            color="#9bdeac"
+            color="#4267b2"
           />
           <DateTimePickerModal
             isVisible={isDatePickerVisible}
@@ -134,7 +173,7 @@ const Formulario = ({citas, setCitas, guardarMostrarForm}) => {
           <Button
             title="Seleccionar hora"
             onPress={showTimePicker}
-            color="#9bdeac"
+            color="#4267b2"
           />
           <DateTimePickerModal
             isVisible={isTimePickerVisible}
@@ -151,51 +190,60 @@ const Formulario = ({citas, setCitas, guardarMostrarForm}) => {
           <Text>{hora}</Text>
         </View>
         <View>
-          <Text style={styles.label}>Sintomas:</Text>
           <TextInput
-            multiline
             style={styles.input}
-            onChangeText={texto => guardarSintomas(texto)}
+            placeholder=" Nombre del reclutador"
+            onChangeText={texto => guardarReclutador(texto)}
           />
         </View>
         <View>
           <TouchableHighlight
+            underlayColor={'#d9455f'}
+            onPress={onPress}
             onPress={() => crearNuevaCita()}
             style={styles.btnGuardar}>
             <Text style={styles.textGuardar}>Guardar</Text>
           </TouchableHighlight>
         </View>
       </ScrollView>
+      </TouchableWithoutFeedback>
     </>
   );
 };
 const styles = StyleSheet.create({
   formulario: {
     backgroundColor: 'white',
-    borderRadius: 10,
+    borderRadius: 5,
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 20,
   },
   label: {
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: 12,
     marginTop: 20,
-    color: '#535c68',
+    color: '#4267b2',
+  },
+  titulito:{
+    textAlign: 'center',
+    color: '#4267b2',
+    fontWeight: 'bold',
+    fontSize: 15,
   },
   input: {
     marginTop: 10,
     height: 50,
     borderWidth: 1,
     borderStyle: 'solid',
-    borderRadius: 9,
-    borderColor: '#9bdeac',
+    borderRadius: 25,
+    borderColor: '#eeeded',
+    marginVertical: 15,
   },
   btnGuardar: {
     marginTop: 20,
     padding: 10,
-    backgroundColor: '#e7305b',
-    marginVertical: 5,
-    borderRadius: 5,
+    backgroundColor: '#ff5a66',
+    marginVertical: 35,
+    borderRadius: 25,
   },
   textGuardar: {
     fontSize: 16,

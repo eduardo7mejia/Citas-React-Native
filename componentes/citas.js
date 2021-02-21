@@ -2,27 +2,50 @@
 import React from 'react';
 import {Text, View, StyleSheet, TouchableHighlight} from 'react-native';
 
-const Cita = ({item, eliminarPaciente}) => {
+const Cita = ({item, eliminarCandidato}) => {
   const dialogoEliminar = id => {
     console.log('Eliminado...', id);
-    eliminarPaciente(id);
+    eliminarCandidato(id);
   };
   return (
     <View style={styles.cita}>
       <View>
-        <Text style={styles.label}>Paciente:</Text>
-        <Text style={styles.texto}>{item.paciente}</Text>
+        <Text style={styles.label}>Candidato:</Text>
+        <Text style={styles.texto}>{item.candidato}</Text>
       </View>
       <View>
-        <Text style={styles.label}>Propietario:</Text>
-        <Text style={styles.texto}>{item.propietario}</Text>
+        <Text style={styles.label}>Area:</Text>
+        <Text style={styles.texto}>{item.area}</Text>
       </View>
       <View>
-        <Text style={styles.label}>Sintomas:</Text>
-        <Text style={styles.texto}>{item.sintomas}</Text>
+        <Text style={styles.label}>Edad:</Text>
+        <Text style={styles.texto}>{item.edad}</Text>
+      </View>
+      <View>
+        <Text style={styles.label}>Telefono:</Text>
+        <Text style={styles.texto}>{item.telefono}</Text>
+      </View>
+      <View>
+        <Text style={styles.label}>Fecha:</Text>
+        <Text style={styles.texto}>{item.fecha}</Text>
+      </View>
+      <View>
+        <Text style={styles.label}>Hora:</Text>
+        <Text style={styles.texto}>{item.hora}</Text>
+      </View>
+      <View>
+        <Text style={styles.label}>Nota:</Text>
+        <Text style={styles.texto}>{item.nota}</Text>
+      </View>
+      <View>
+        <Text style={styles.label}>Reclutador:</Text>
+        <Text style={styles.texto}>{item.reclutador}</Text>
       </View>
       <View>
         <TouchableHighlight
+        activeOpacity={0.6}
+          underlayColor={'#4267b2'}
+          // onPress={onPress}
           onPress={() => dialogoEliminar(item.id)}
           style={styles.btnEliminar}>
           <Text style={styles.textEliminar}> Eliminar &times; </Text>
@@ -44,7 +67,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 18,
     marginTop: 20,
-    color: '#9bdeac',
+    color: '#4267b2',
   },
   texto: {
     fontSize: 18,
@@ -53,14 +76,14 @@ const styles = StyleSheet.create({
   btnEliminar: {
     padding: 10,
     marginVertical: 5,
-    borderRadius: 5,
+    borderRadius: 25,
     borderWidth: 1,
-    borderColor: '#ff847c',
+    borderColor: '#4267b2',
     backgroundColor: 'transparent',
   },
   textEliminar: {
     fontSize: 16,
-    color: 'black',
+    color: '#4267b2',
     textAlign: 'center',
     fontWeight: 'bold',
   },
